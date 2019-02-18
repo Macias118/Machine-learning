@@ -22,7 +22,7 @@ def get_data_from_csv_file(filepath):
         reader = csv.reader(file)
         return [line for line in reader]
 
-def main():
+def get_trained_model():
     tf.enable_eager_execution()
 
     # Get training data from url to file
@@ -86,7 +86,7 @@ def main():
     train_loss_results = []
     train_accuracy_results = []
 
-    num_epochs = 50
+    num_epochs = 500
 
     for epoch in range(num_epochs):
         epoch_loss_avg = tfe.metrics.Mean()
@@ -112,13 +112,7 @@ def main():
                 epoch_loss_avg.result(),
                 epoch_accuracy.result()))
 
-    test(
-        model,
-        class_names,
-        [5.1, 3.3, 1.7, 0.5,],
-        [5.9, 3.0, 4.2, 1.5,],
-        [6.9, 3.1, 5.4, 2.1],
-        [7.2, 6. , 5. , 2.1])
+    return model
 
 def test(model, class_names, *predict_dataset):
     predictions = model(tf.convert_to_tensor(predict_dataset))
@@ -130,4 +124,12 @@ def test(model, class_names, *predict_dataset):
         print("Example {} prediction: {} ({:4.1f}%)".format(i, name, 100*p))
 
 if __name__ == '__main__':
-    main()
+    model = get_trained_model()
+    class_names = ['setosa', 'versicolor', 'virginica']
+    test(
+        model,
+        class_names,
+        [5.1, 3.3, 1.7, 0.5,],
+        [5.9, 3.0, 4.2, 1.5,],
+        [6.9, 3.1, 5.4, 2.1],
+        [7.2, 6. , 5. , 2.1])
